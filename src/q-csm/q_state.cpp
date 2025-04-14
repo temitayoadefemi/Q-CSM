@@ -16,8 +16,7 @@ std::vector<float> computeCentroid(const std::vector<std::vector<float>>& vector
     size_t valid_vectors = 0;
     for (const auto& v : vectors) {
         if (v.size() != dim) {
-             // Optionally log an error or throw
-             // std::cerr << "Warning: Inconsistent vector dimension in computeCentroid." << std::endl;
+
              continue; // Skip vectors with wrong dimension
         }
         for (size_t i = 0; i < dim; ++i) {

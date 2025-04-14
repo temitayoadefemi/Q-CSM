@@ -36,17 +36,16 @@ int main(int argc, char *argv[]) {
     // --- Get Embeddings ---
     std::cout << "Requesting embeddings for " << texts.size() << " texts..." << std::endl;
     std::vector<std::vector<float>> embeddings_list;
-    embeddings_list.reserve(texts.size()); // Pre-allocate space
+    embeddings_list.reserve(texts.size());
 
     for (const std::string& text : texts) {
-        // std::cout << "  Processing: \"" << text << "\"" << std::endl; // Already printed in getEmbeddingFromServer
         std::vector<float> result = getEmbeddingFromServer(text);
         if (!result.empty()) {
             embeddings_list.push_back(result);
         } else {
             std::cerr << "  ERROR: Failed to get embedding for: \"" << text << "\". Skipping this input." << std::endl;
-            // Decide how to handle: stop?, continue?, use a dummy vector?
-            // For now, we just skip and the QBrainState will have fewer states.
+           
+           
         }
     }
 
@@ -81,20 +80,9 @@ int main(int argc, char *argv[]) {
         std::cout << "  Total Initial Probability Check: " << total_prob_initial << std::endl;
 
 
-        // --- Apply Emotion (Simplified/Skipped) ---
-        // To keep it simple with command-line args, we'll just use the normalized state directly.
-        // You could add logic here to parse emotion biases from args or a config file if needed.
         std::cout << "\nApplying Emotion Engine... (Skipped for command-line simplicity)" << std::endl;
         QBrainState modulated_brain = brain; // No change in this simplified version
-        // If you wanted a simple uniform positive bias example:
-        /*
-        EmotionVector emotion;
-        emotion.intensity = 0.2f; // Low intensity positive bias
-        emotion.bias.assign(brain.size(), 0.1f); // Small positive bias for all states
-        modulated_brain = applyEmotionEngine(brain, emotion);
-        */
-
-
+    
         std::cout << "\n--- \"Emotionally Modulated\" QBrainState (" << modulated_brain.size() << " states) ---" << std::endl;
          double total_prob_modulated = 0;
         if (!modulated_brain.empty()) {
@@ -108,8 +96,6 @@ int main(int argc, char *argv[]) {
             }
              std::cout << "  Total Modulated Probability Check: " << total_prob_modulated << std::endl;
 
-            // --- Make Decision ---
-            // Decide whether to collapse (true) or get evolved direction (false)
             bool collapse_state = true;
             std::cout << "\nMaking Decision (Collapse = " << (collapse_state ? "true" : "false") << ")..." << std::endl;
             DecisionResult decision = makeDecision(modulated_brain, collapse_state);
@@ -118,12 +104,8 @@ int main(int argc, char *argv[]) {
             std::string result_type_str;
 
             if (decision.collapsed) {
-                 // Find the original text associated with the collapsed state
                 std::string collapsed_text = "[Unknown - state vector mismatch]";
                 for(size_t i = 0; i < embeddings_list.size(); ++i) {
-                    // Simple pointer comparison might not work if vectors were copied,
-                    // but comparing content should be reliable if vectors are unique.
-                    // Using cosine similarity for robustness against tiny float differences.
                     if (cosineSimilarity(decision.collapsedState.vector, embeddings_list[i]) > 0.9999f) {
                          collapsed_text = texts[i];
                          break;
@@ -132,14 +114,11 @@ int main(int argc, char *argv[]) {
 
                 std::cout << "\nFinal Collapsed Thought: \"" << collapsed_text << "\"" << std::endl;
                 std::cout << "  Amplitude: " << decision.collapsedState.amplitude << "\n";
-                // Probability here refers to the probability *before* collapse. The state *is* certain post-collapse.
-                // std::cout << "  Pre-Collapse Probability: " << std::norm(decision.collapsedState.amplitude) * 100.0 << "%\n";
                 final_vector = decision.collapsedState.vector;
                 result_type_str = "Collapsed State Vector";
 
             } else {
                 std::cout << "\nEvolved Cognitive Direction (Vector):" << std::endl;
-                // Print first few elements for brevity
                  std::cout << "  [";
                 for (size_t i=0; i < 5 && i < decision.evolvedDirection.size(); ++i) std::cout << decision.evolvedDirection[i] << (i<4 ? ", " : "");
                 std::cout << "... ] (" << decision.evolvedDirection.size() << " dimensions)" << std::endl;
@@ -147,11 +126,10 @@ int main(int argc, char *argv[]) {
                  result_type_str = "Evolved Direction Vector";
             }
 
-            // --- Concept Mapping & LLM Reflection ---
+
             if (!final_vector.empty()) {
                  std::cout << "\nMapping " << result_type_str << " to concepts..." << std::endl;
 
-                 // Build concept library dynamically from inputs
                  std::map<std::string, std::vector<float>> conceptLibrary;
                  for (size_t i = 0; i < embeddings_list.size(); ++i) {
                      std::string concept_name = "input_" + std::to_string(i) + ": " + texts[i].substr(0, 20) + (texts[i].length() > 20 ? "..." : ""); // Use input index + snippet

@@ -10,7 +10,7 @@
 #include "q_state.h"
 
 
-// Return top-k concept labels that best match the input vector
+
 std::vector<std::string> mapVectorToTopConcepts(
     const std::vector<float>& vector,
     const std::map<std::string, std::vector<float>>& conceptLibrary,
@@ -30,7 +30,7 @@ std::vector<std::string> mapVectorToTopConcepts(
     return topConcepts;
 }
 
-// Construct a prompt from top concepts
+
 std::string buildPrompt(const std::vector<std::string>& concepts) {
     std::ostringstream oss;
     oss << "You are a conscious machine reflecting on your internal state.\n";
@@ -41,7 +41,7 @@ std::string buildPrompt(const std::vector<std::string>& concepts) {
     return oss.str();
 }
 
-// Execute Python LLM reflection script
+
 std::string reflectWithLLM(const std::string& prompt) {
     std::ostringstream command;
     command << "echo \"" << prompt << "\" | python3 llm_reflection_layer.py";

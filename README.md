@@ -1,7 +1,9 @@
 
 # Q-CSM: Quantum-Inspired Cognitive State Machine
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ## Overview
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
+
+## Overview
 
 Q-CSM is an experimental C++/Python project exploring a novel approach to modeling cognitive states and reflection. It uses a quantum-inspired framework where potential thoughts exist in a superposition, influenced by simulated emotions, and ultimately resolve into a state that is interpreted and reflected upon by a Large Language Model (LLM).
 
@@ -92,6 +94,3 @@ Q-CSM is an experimental C++/Python project exploring a novel approach to modeli
 * Currently, URLs for the embedding server (`http://localhost:5005/embed`) and LLM (`http://localhost:11434/api/generate`), the LLM model name (`mistral`), and embedding model name (`all-MiniLM-L6-v2`) are hardcoded. Future improvements could involve using configuration files or command-line arguments.
 * Emotion vector parameters are currently hardcoded or simplified in `main.cpp`.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. *(You should create a LICENSE file with the MIT license text)*

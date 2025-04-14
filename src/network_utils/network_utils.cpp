@@ -3,34 +3,31 @@
 #include <curl/curl.h>
 #include <iostream>
 #include <sstream>
-#include <stdexcept> // For exceptions in JSON parsing if needed
+#include <stdexcept> 
 
-// Make sure you have nlohmann/json installed and available
+
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
 
-// --- WriteCallback function implementation ---
-// Keep it static as it's only used within this file by curl_easy_setopt
+
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* s) {
     size_t totalSize = size * nmemb;
     try {
         s->append(static_cast<char*>(contents), totalSize);
     } catch (const std::bad_alloc& e) {
-        // Handle memory allocation failure
         std::cerr << "ERROR: Memory allocation failed in WriteCallback: " << e.what() << std::endl;
-        return 0; // Indicate error to libcurl
+        return 0; 
     }
     return totalSize;
 }
 
-// --- getEmbeddingFromServer function implementation ---
 std::vector<float> getEmbeddingFromServer(const std::string& sentence) {
     std::vector<float> embedding;
     CURL* curl = curl_easy_init();
     if (!curl) {
         std::cerr << "ERROR: curl_easy_init() failed." << std::endl;
-        return embedding; // Return empty vector
+        return embedding; 
     }
 
     std::string readBuffer;
@@ -38,19 +35,18 @@ std::vector<float> getEmbeddingFromServer(const std::string& sentence) {
     struct curl_slist* headers = nullptr;
 
     try {
-        // Prepare JSON request
         json requestJson;
         requestJson["sentence"] = sentence;
         jsonData = requestJson.dump();
 
-        // Prepare headers
+
         headers = curl_slist_append(headers, "Content-Type: application/json");
         headers = curl_slist_append(headers, "Accept: application/json");
         if (!headers) {
             throw std::runtime_error("curl_slist_append failed");
         }
 
-        // Set cURL options
+
         curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:5005/embed");
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, jsonData.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, jsonData.length());
@@ -60,7 +56,6 @@ std::vector<float> getEmbeddingFromServer(const std::string& sentence) {
         curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30L); // Slightly increased timeout
         curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L); // Fail on HTTP codes >= 400
 
-        // Perform the request
         std::cerr << "Connecting to embedding server for: \"" << sentence.substr(0, 50) << (sentence.length() > 50 ? "..." : "") << "\"" << std::endl;
         CURLcode res = curl_easy_perform(curl);
 

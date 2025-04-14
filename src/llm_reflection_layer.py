@@ -8,7 +8,7 @@ if not prompt:
     sys.exit(1)
 
 response = requests.post("http://localhost:11434/api/generate", json={
-    "model": "mistral",  # or "mixtral"
+    "model": "mistral",  
     "prompt": prompt,
     "stream": False
 })

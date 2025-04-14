@@ -3,8 +3,8 @@
 #define Q_STATE_H
 
 #include <vector>
-#include <complex> // Use standard complex numbers
-#include <string>  // Include string as QState might be used where strings are relevant
+#include <complex> 
+#include <string> 
 
 // Define M_PI if not available (e.g., not defined by <cmath> in strict C++)
 #ifndef M_PI
